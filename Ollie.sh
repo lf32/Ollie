@@ -89,3 +89,35 @@ revShellPayloadEncoding() {
 	read -p "Pick an Encoding Type from abouve [Default=1]: " r3venc0d1ng
 }
 revShellPayloadEncoding
+
+
+#
+# Reverse Shell
+#
+# Reverse Shell Tools
+#
+revShellPayloadTools() {
+	echo ""
+	echo "[REVERSE SHELL] Choose The Type Of Tool You Wish To Use"
+	echo "[1] Bash -i\t\t[2] Bash 196\t\t[3] Bash readline"
+	echo "[4] Bash 5\t\t[5] Bash udp\t\t[6] nc mkfifo"
+	echo "[7] nc -e\t\t[8] BusyBox nc -e\t[9] nc -c"
+	echo "[10] ncat -e\t\t[11] ncat udp\t\t[12] rustcat"
+	echo "[13] C\t\t\t[14] C# TCP Client\t[15] C# Bash -i"
+	echo "[16] Haskel #1\t\t[17] Perl\t\t[18] Perl no sh"
+	echo "[19] Perl PentestMonkey\t[20] PHP PentestMonkey\t[21] PHP Ivan Sincek"
+	echo "[22] PHP cmd\t\t[23] PHP cmd 2\t\t[24] PHP cmd small"
+	echo "[25] PHP exec\t\t[26] PHP shell_exec\t[27] PHP system"
+	echo "[28] PHP passthru\t[29] PHP \`\t\t[30] PHP popen"
+	echo "[31] PHP proc_open\t[32] Python #1\t\t[33] Python #2"
+	echo "[34] Python3 #1\t\t[35] Python3 #2\t\t[36] Python3 shortest"
+	echo "[37] Ruby #1\t\t[38] Ruby no sh\t\t[39] socat #1"
+	echo "[40] socat #2 (TTY)\t[41] node.js\t\t[42] node.js #2"
+	echo "[43] Java #1\t\t[44] Java #2\t\t[45] Java #3"
+	echo "[46] Java Web\t\t[47] Java Two Way\t[48] Javascript"
+	echo "[49] telnet\t\t[50] zsh\t\t[51] Lua #1"
+	echo "[52] Lua #2\t\t[53] GoLang\t\t[54] Vlang"
+	echo "[55] Awk\t\t[56] Dart"
+	read -p "Pick a number from above [Default=1]: " r3vp4yl04dt00l
+}
+revShellPayloadTools
