@@ -46,3 +46,13 @@ platform() {
 }
 platform
 
+#
+# Generate Shell Type
+#
+genShell() {
+	echo ""
+	echo "Choose The Shell You Want To Generate"
+	echo "[1] Reverse\t[2] Bind\t[3] MSFVenom\t[4] HoaxShell"
+	read -p "Pick a number from above [Default=1]: " g3n5h3ll
+}
+genShell
