@@ -35,6 +35,7 @@ socket() {
 }
 socket
 
+
 #
 # Platform
 #
@@ -45,6 +46,7 @@ platform() {
 	read -p "Pick a number from above [Default=1]: " pl4tf0rm	
 }
 platform
+
 
 #
 # Generate Shell Type
@@ -73,3 +75,17 @@ revPayloadShell() {
 	read -p "Pick a number from above [Default=1]: " r3vp4yl04d5h3ll
 }
 revPayloadShell
+
+
+#
+# Reverse Shell
+#
+# Reverse Shell Encoding Payload Type
+#
+revShellPayloadEncoding() {
+	echo ""
+	echo "[REVERSE SHELL] Choose The Encoding Type"
+	echo "[1] None [2] URL Encode [3] Double URL Encode [4] Base64"
+	read -p "Pick an Encoding Type from abouve [Default=1]: " r3venc0d1ng
+}
+revShellPayloadEncoding
