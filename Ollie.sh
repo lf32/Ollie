@@ -34,3 +34,15 @@ socket() {
 	[ -z "$PORT" ] && PORT="9001"
 }
 socket
+
+#
+# Platform
+#
+platform() {
+	echo ""
+	echo "Choose The Platform You Want To Go With"
+	echo "[1] Linux\t[2] Windows\t[3] Mac"
+	read -p "Pick a number from above [Default=1]: " pl4tf0rm	
+}
+platform
+
