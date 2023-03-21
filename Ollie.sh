@@ -135,3 +135,25 @@ bindPayloadTools() {
 	read -p "Pick a number from above [Default=1]: " b1ndp4yl04dt00l
 }
 bindPayloadTool
+
+
+#
+# MSFVenom
+#
+# MSFVenom Shell Payload Tools
+#
+msfVenomPayloadTools() {
+	echo ""
+	echo "[MSFVENOM] Choose a Tool You Wish To Use"
+	echo "[1] Linux Meterpreter Staged Reverse TCP (x64)"
+	echo "[2] Linux Stageless Reverse TCP (x64)"
+	echo "[3] PHP Meterpreter Stageless Reverse TCP"
+	echo "[4] PHP Reverse PHP"
+	echo "[5] JSP Stageless Reverse TCP"
+	echo "[6] WAR Stageless Reverse TCP"
+	echo "[7] Python Stageless Reverse TCP"
+	echo "[8] Bash Stageless Reverse TCP"
+	read -p "Pick a number from above [Default=1]: " msfv3n0mp4yl04dt00l
+}
+msfVenomPayloadTools
+
