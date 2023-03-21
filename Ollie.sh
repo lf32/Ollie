@@ -121,3 +121,17 @@ revShellPayloadTools() {
 	read -p "Pick a number from above [Default=1]: " r3vp4yl04dt00l
 }
 revShellPayloadTools
+
+
+#
+# Bind Shell
+#
+# Bind Shell Payload Tools
+#
+bindPayloadTools() {
+	echo ""
+	echo "[BIND SHELL] Choose A Tool You Wish To Use"
+	echo "[1] Python3 Bind [2] PHP Bind"
+	read -p "Pick a number from above [Default=1]: " b1ndp4yl04dt00l
+}
+bindPayloadTool
