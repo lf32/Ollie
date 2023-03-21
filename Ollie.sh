@@ -157,3 +157,26 @@ msfVenomPayloadTools() {
 }
 msfVenomPayloadTools
 
+
+#
+# HoaxShell
+#
+# HoaxShell Payloads
+#
+hoaxShellPayloadTools() {
+	echo ""
+	echo "[HoaxShell] Choose a Tool You Wish To Use"
+	echo "[1] Windows CMD cURL"
+	echo "[2] PowerShell IEX"
+	echo "[3] PowerShell IEX Constr Lang Mode"
+	echo "[4] PowerShell Outfile"
+	echo "[5] PowerShell Outfile Constr Lang Mode"
+	echo "[6] Windows CMD cURL https"
+	echo "[7] PowerShell IEX https"
+	echo "[8] PowerShell Constr Lang Mode IEX https"
+	echo "[9] PowerShell Outfile https"
+	echo "[10] PowerShell Outfile Constr Lang Mode https"
+	read -p "Pick a number from above [Default=1]: " h04xp4yl04dt00l
+}
+hoaxShellPayloadTools
+
