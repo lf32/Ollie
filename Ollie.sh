@@ -56,3 +56,20 @@ genShell() {
 	read -p "Pick a number from above [Default=1]: " g3n5h3ll
 }
 genShell
+
+
+#
+# Reverse Shell
+# 
+# Payload Shell Type
+#
+revPayloadShell() {
+	echo ""
+	echo "[REVERSE SHELL] Choose The Payload Shell To Use"
+	echo "[1] sh\t\t[2] /bin/sh\t[3] bash\t[4] /bin/bash\t[5] cmd"
+	echo "[6] powershell\t[7] pwsh\t[8] ash\t\t[9] bsh\t\t[10] csh"
+	echo "[11] ksh\t[12] zsh\t[13] pkdsh\t[14] tcsh\t[15] mksh"
+	echo "[16] dash"
+	read -p "Pick a number from above [Default=1]: " r3vp4yl04d5h3ll
+}
+revPayloadShell
