@@ -1,4 +1,6 @@
 # Ollie
+
+![x](./Ollie_On_Comfy.png)
 #### A Command Line Interface for generating Reverse Shells
 
 This project was inspired from [revshells.com](https://revshells.com).
@@ -36,7 +38,7 @@ The above script supports generating payloads for
 + HoaxShell
 
 Supporting all the 3 platforms
-
+~
 + Linux
 + Windows
 + Mac
