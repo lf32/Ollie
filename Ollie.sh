@@ -238,7 +238,7 @@ bindPayloadTools() {
 #
 msfVenomPayloadTools() {
 	echo ""
-	echo -e "${RED}=============================== BIND SHELL ==============================="
+	echo -e "${RED}=============================== MSFVENOM ==============================="
 	echo -e "${YELLOW}[MSFVENOM] Choose a Tool You Wish To Use${GREEN}"
 	echo "[1] Linux Meterpreter Staged Reverse TCP (x64)"
 	echo "[2] Linux Stageless Reverse TCP (x64)"
@@ -264,7 +264,7 @@ msfVenomPayloadTools() {
 #
 hoaxShellPayloadTools() {
 	echo ""
-	echo -e "${RED}=============================== REVERSE SHELL ==============================="
+	echo -e "${RED}=============================== HOAXSHELL ==============================="
 	echo -e "${YELLOW}[HoaxShell] Choose a Tool You Wish To Use${GREEN}"
 	echo "[1] Windows CMD cURL"
 	echo "[2] PowerShell IEX"
@@ -296,7 +296,7 @@ hoaxShellPayloadTools() {
 
 	SHELLTYPE="${HoaxShell}"
 
-	echo -e "\n${YELLOW}=============================== BIND SHELL PAYLOAD ===============================${NC}"
+	echo -e "\n${YELLOW}=============================== HOAXSHELL PAYLOAD ===============================${NC}"
 	echo -e "\n>>> Download The HoaxShell Listener at https://github.com/t3l3machus/hoaxshell/tree/main/revshells \n"
 
 	echo $SHELLTYPE | xclip -sel c
