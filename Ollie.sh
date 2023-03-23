@@ -45,6 +45,8 @@ socket() {
 	[ -z "$PORT" ] && PORT="9001"
 	echo "${NC}"
 }
+socket
+
 
 #
 # Platform
@@ -749,5 +751,4 @@ ServicePoint srvPoint, X509Certificate certificate,WebRequest request, int certi
 )
 
 
-socket
 genShell
