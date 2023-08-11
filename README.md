@@ -5,10 +5,6 @@
 
 This project was inspired from [revshells.com](https://revshells.com).
 
-The following script helps in generating reverse shell payloads directly from your terminal.
-
-![y](Ollie_On_Cli.png)
-
 ## Features
 
 The above script supports generating payloads for
@@ -50,6 +46,10 @@ Since the script uses Bash Shell to run you can simply execute it with
 ```
 ./Ollie.sh
 ```
+
+The following script helps in generating reverse shell payloads directly from your terminal.
+
+![y](Ollie_On_Cli.png)
 
 ## License
 
