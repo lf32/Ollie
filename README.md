@@ -1,4 +1,4 @@
-# Ollie
+# Ollie - A CLI for generating Reverse Shells
 
 ![x](./Ollie_On_Comfy.png)
 #### A Command Line Interface for generating Reverse Shells
